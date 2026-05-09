@@ -1,9 +1,10 @@
 from dataclasses import dataclass, field
+from enum import Enum
 from pathlib import Path
 from typing import Optional
 
 
-class ProcessingStatus:
+class ProcessingStatus(str, Enum):
     """Estados posibles del procesamiento de un archivo."""
 
     PENDING = "PENDING"
@@ -29,7 +30,7 @@ class FileContext:
     canonical_filename: Optional[str] = None
     fixes_applied: list[str] = field(default_factory=list)
     validation_errors: list[str] = field(default_factory=list)
-    status: str = ProcessingStatus.PENDING
+    status: ProcessingStatus = ProcessingStatus.PENDING
 
     @classmethod
     def from_path(cls, path: Path) -> "FileContext":

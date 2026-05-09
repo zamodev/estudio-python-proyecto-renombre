@@ -1,0 +1,9 @@
+{
+  "log_level": "INFO",
+  "watchers": [
+    "watchers/documentos_principales.json"
+  ],
+  "rule_profiles": [
+    "profiles/documentos_legales"
+  ]
+}

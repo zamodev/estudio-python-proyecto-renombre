@@ -1,0 +1,25 @@
+{
+  "rub_patterns": [
+    "^RL\\d{8}$",
+    "^RQL\\d{12}$"
+  ],
+  "cedula_pattern": "^\\d{6,12}$",
+  "cleanup_rules": {
+    "uppercase": true,
+    "replace_spaces_with_underscore": true,
+    "replace_hyphen_with_underscore": true,
+    "collapse_multiple_underscores": true,
+    "remove_special_characters": true,
+    "remove_prefixes": ["COPIA", "COPY", "nequi"]
+  },
+  "auto_fix_policy": {
+    "allow_pattern_fixes": true,
+    "allow_alias_fix": true,
+    "allow_separator_fix": true,
+    "allow_case_fix": true,
+    "allow_special_character_fix": true,
+    "allow_extension_normalization": false,
+    "allow_rub_guessing": false,
+    "allow_cedula_guessing": false
+  }
+}

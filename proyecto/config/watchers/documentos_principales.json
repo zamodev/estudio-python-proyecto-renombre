@@ -1,0 +1,10 @@
+{
+  "name": "documentos_principales",
+  "watch_path": "C:/Users/juzamora/prueba/CarpetaA",
+  "destination_path": "C:/Users/juzamora/prueba/CarpetaB",
+  "rules_profile": "documentos_legales",
+  "process_existing_on_startup": true,
+  "recursive": false,
+  "stable_wait_seconds": 1,
+  "stability_checks": 3
+}

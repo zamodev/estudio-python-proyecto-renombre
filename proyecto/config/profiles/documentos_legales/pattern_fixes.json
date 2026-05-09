@@ -1,0 +1,9 @@
+[
+  {
+    "name": "emb_compacto_con_rub_y_cedula",
+    "match": "^(EMB)(RQL\\d{12}|RL\\d{8})_(\\d{6,12})$",
+    "replace": "ASEMB_\\2_\\3",
+    "description": "Corrige nombres donde EMB quedó pegado al RUB",
+    "enabled": true
+  }
+]

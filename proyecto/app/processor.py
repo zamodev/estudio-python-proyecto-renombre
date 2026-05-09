@@ -22,13 +22,17 @@ class FileProcessor:
         destination_path: str,
         strategies_config: list[dict],
         rule_profile: Optional[RuleProfile] = None,
+        dry_run: bool = False,
     ):
         self.destination_path = Path(destination_path)
-        self.destination_path.mkdir(parents=True, exist_ok=True)
         self.rule_profile = rule_profile
+        self.dry_run = dry_run
         self.strategies = [build_strategy(cfg, rule_profile=rule_profile) for cfg in strategies_config]
         self._processing_lock = threading.Lock()
         self._processing_paths: set[str] = set()
+
+        if not self.dry_run:
+            self.destination_path.mkdir(parents=True, exist_ok=True)
 
     def process(self, file_path: str) -> None:
         """Procesa un archivo y lo mueve al destino configurado."""
@@ -58,6 +62,18 @@ class FileProcessor:
                     context.original_filename,
                     "; ".join(context.validation_errors) or "Sin detalle.",
                 )
+                return
+
+            if self.dry_run:
+                final_destination_path = self.destination_path / context.filename
+                if context.status == ProcessingStatus.AUTO_FIXED:
+                    logger.info(
+                        "[DRY-RUN] Se movería con fixes a: %s. Fixes: %s",
+                        final_destination_path,
+                        "; ".join(context.fixes_applied) or "Sin detalle.",
+                    )
+                else:
+                    logger.info("[DRY-RUN] Se movería a: %s", final_destination_path)
                 return
 
             final_source_path = self._rename_if_needed(context)
