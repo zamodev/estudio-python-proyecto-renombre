@@ -31,6 +31,7 @@ class FileContext:
     fixes_applied: list[str] = field(default_factory=list)
     validation_errors: list[str] = field(default_factory=list)
     status: ProcessingStatus = ProcessingStatus.PENDING
+    is_parte: bool = False
 
     @classmethod
     def from_path(cls, path: Path) -> "FileContext":

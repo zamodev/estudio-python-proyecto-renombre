@@ -1,0 +1,13 @@
+{
+  "parte_detection_patterns": [
+    "PARTE[_]?\\d+",
+    "PARTE[_]?[IVX]+",
+    "[IVX]+[_]?PARTE",
+    "CSV[_]?PARTE"
+  ],
+  "parte_keep_extensions": [".xls", ".xlsx", ".xlsm", ".csv"],
+  "general_remove_extensions": [
+    ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm", ".m4v", ".3gp",
+    ".msg", ".eml", ".emlx", ".ost", ".pst"
+  ]
+}

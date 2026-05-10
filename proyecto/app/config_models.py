@@ -62,6 +62,15 @@ class DocumentTypeRule:
 
 
 @dataclass(frozen=True)
+class ZipPolicy:
+    """Política de filtrado del contenido interno de archivos ZIP."""
+
+    parte_detection_patterns: tuple[str, ...]
+    parte_keep_extensions: tuple[str, ...]
+    general_remove_extensions: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class RuleProfile:
     """Perfil reutilizable con reglas documentales y autocorrecciones."""
 
@@ -73,6 +82,7 @@ class RuleProfile:
     alias_map: dict[str, str]
     cleanup_rules: CleanupRules
     auto_fix_policy: AutoFixPolicy
+    zip_policy: Optional[ZipPolicy] = None
 
     def compiled_rub_patterns(self) -> tuple[re.Pattern[str], ...]:
         """Compila y devuelve las expresiones regulares válidas para RUB."""

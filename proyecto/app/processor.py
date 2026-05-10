@@ -10,6 +10,7 @@ from app.config_models import RuleProfile
 from app.exceptions import FileProcessingError
 from app.models import FileContext, ProcessingStatus
 from app.registry import build_strategy
+from app.zip_content_filter import ZipContentFilter
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,11 @@ class FileProcessor:
         self.strategies = [build_strategy(cfg, rule_profile=rule_profile) for cfg in strategies_config]
         self._processing_lock = threading.Lock()
         self._processing_paths: set[str] = set()
+        self._zip_filter: Optional[ZipContentFilter] = (
+            ZipContentFilter(rule_profile.zip_policy)
+            if rule_profile and rule_profile.zip_policy
+            else None
+        )
 
         if not self.dry_run:
             self.destination_path.mkdir(parents=True, exist_ok=True)
@@ -66,6 +72,9 @@ class FileProcessor:
 
             if self.dry_run:
                 final_destination_path = self.destination_path / context.filename
+                if self._zip_filter and context.suffix == ".zip":
+                    mode = "parte" if context.is_parte else "general"
+                    self._zip_filter.filter_zip(context.source_path, mode=mode, dry_run=True)
                 if context.status == ProcessingStatus.AUTO_FIXED:
                     logger.info(
                         "[DRY-RUN] Se movería con fixes a: %s. Fixes: %s",
@@ -75,6 +84,10 @@ class FileProcessor:
                 else:
                     logger.info("[DRY-RUN] Se movería a: %s", final_destination_path)
                 return
+
+            if self._zip_filter and context.suffix == ".zip":
+                mode = "parte" if context.is_parte else "general"
+                self._zip_filter.filter_zip(context.source_path, mode=mode, dry_run=False)
 
             final_source_path = self._rename_if_needed(context)
             final_destination_path = self.destination_path / context.filename

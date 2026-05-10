@@ -10,6 +10,7 @@ from app.strategies.validate_filename_pattern import ValidateFilenamePatternStra
 from app.strategies.normalize_filename import NormalizeFilenameStrategy
 from app.strategies.apply_pattern_fixes import ApplyPatternFixesStrategy
 from app.strategies.resolve_alias import ResolveAliasStrategy
+from app.strategies.strip_parte import StripParteStrategy
 from app.strategies.parse_document_name import ParseDocumentNameStrategy
 from app.strategies.build_canonical_name import BuildCanonicalNameStrategy
 from app.strategies.validate_business_rules import ValidateBusinessRulesStrategy
@@ -24,6 +25,7 @@ STRATEGY_REGISTRY = {
     "NormalizeFilenameStrategy": NormalizeFilenameStrategy,
     "ApplyPatternFixesStrategy": ApplyPatternFixesStrategy,
     "ResolveAliasStrategy": ResolveAliasStrategy,
+    "StripParteStrategy": StripParteStrategy,
     "ParseDocumentNameStrategy": ParseDocumentNameStrategy,
     "BuildCanonicalNameStrategy": BuildCanonicalNameStrategy,
     "ValidateBusinessRulesStrategy": ValidateBusinessRulesStrategy,
@@ -34,6 +36,7 @@ PROFILE_AWARE_STRATEGIES = {
     "NormalizeFilenameStrategy",
     "ApplyPatternFixesStrategy",
     "ResolveAliasStrategy",
+    "StripParteStrategy",
     "ParseDocumentNameStrategy",
     "BuildCanonicalNameStrategy",
     "ValidateBusinessRulesStrategy",

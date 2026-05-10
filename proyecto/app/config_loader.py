@@ -31,6 +31,7 @@ from app.config_models import (
     PatternFixRule,
     RuleProfile,
     WatchProfile,
+    ZipPolicy,
 )
 from app.exceptions import ConfigurationError
 
@@ -39,6 +40,7 @@ _DEFAULT_PIPELINE = [
     {"name": "NormalizeFilenameStrategy", "params": {}},
     {"name": "ApplyPatternFixesStrategy", "params": {}},
     {"name": "ResolveAliasStrategy", "params": {}},
+    {"name": "StripParteStrategy", "params": {}},
     {"name": "ParseDocumentNameStrategy", "params": {}},
     {"name": "BuildCanonicalNameStrategy", "params": {}},
     {"name": "ValidateBusinessRulesStrategy", "params": {}},
@@ -148,6 +150,10 @@ def _merge_profile_dir(profile_dir: Path) -> dict:
     if aliases_path.exists():
         merged["alias_map"] = _read_json(aliases_path)
 
+    zip_policy_path = profile_dir / "zip_policy.json"
+    if zip_policy_path.exists():
+        merged["zip_policy"] = _read_json(zip_policy_path)
+
     return merged
 
 
@@ -243,6 +249,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
     pattern_fixes_data = data.get("pattern_fixes", [])
     cleanup_rules_data = data.get("cleanup_rules", {})
     auto_fix_policy_data = data.get("auto_fix_policy", {})
+    zip_policy_data = data.get("zip_policy")
 
     if not isinstance(document_types_data, dict) or not document_types_data:
         raise ConfigurationError(
@@ -317,6 +324,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
         alias_map=alias_map,
         cleanup_rules=cleanup_rules,
         auto_fix_policy=auto_fix_policy,
+        zip_policy=_build_zip_policy(zip_policy_data) if zip_policy_data else None,
     )
 
 
@@ -384,6 +392,27 @@ def _build_document_type_rule(name: str, data: dict) -> DocumentTypeRule:
 # ---------------------------------------------------------------------------
 # Utilidad interna
 # ---------------------------------------------------------------------------
+
+def _build_zip_policy(data: dict) -> ZipPolicy:
+    """Construye la política de filtrado ZIP desde un dict deserializado."""
+
+    parte_patterns = data.get("parte_detection_patterns", [])
+    parte_keep = data.get("parte_keep_extensions", [])
+    general_remove = data.get("general_remove_extensions", [])
+
+    if not isinstance(parte_patterns, list):
+        raise ConfigurationError("'zip_policy.parte_detection_patterns' debe ser una lista.")
+    if not isinstance(parte_keep, list):
+        raise ConfigurationError("'zip_policy.parte_keep_extensions' debe ser una lista.")
+    if not isinstance(general_remove, list):
+        raise ConfigurationError("'zip_policy.general_remove_extensions' debe ser una lista.")
+
+    return ZipPolicy(
+        parte_detection_patterns=tuple(parte_patterns),
+        parte_keep_extensions=tuple(ext.lower() for ext in parte_keep),
+        general_remove_extensions=tuple(ext.lower() for ext in general_remove),
+    )
+
 
 def _read_json(path: Path) -> dict:
     """Lee y parsea un archivo JSON; lanza ConfigurationError si falla."""

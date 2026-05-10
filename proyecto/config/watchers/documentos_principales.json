@@ -1,7 +1,7 @@
 {
   "name": "documentos_principales",
-  "watch_path": "C:/Users/juzamora/prueba/CarpetaA",
-  "destination_path": "C:/Users/juzamora/prueba/CarpetaB",
+  "watch_path": "C:/Users/juzamora/ECOSISTEMAS/EVC NEGOCIOS DIGITALES TRANSVERSALES/proyecto-u/carpeta-a",
+  "destination_path": "C:/Users/juzamora/ECOSISTEMAS/EVC NEGOCIOS DIGITALES TRANSVERSALES/proyecto-u/carpeta-b",
   "rules_profile": "documentos_legales",
   "process_existing_on_startup": true,
   "recursive": false,
