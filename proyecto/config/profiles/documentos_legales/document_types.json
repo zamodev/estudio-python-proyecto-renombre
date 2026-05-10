@@ -23,5 +23,10 @@
     "requires_cedula": true,
     "default_extension": ".pdf",
     "allowed_extensions": [".pdf"]
+  },
+  "SOL": {
+    "requires_cedula": true,
+    "default_extension": ".zip",
+    "allowed_extensions": [".zip"]
   }
 }
