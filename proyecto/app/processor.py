@@ -1,5 +1,7 @@
 """Canal de procesamiento de archivos: valida, renombra y mueve archivos."""
 
+from __future__ import annotations
+
 import logging
 import shutil
 import threading

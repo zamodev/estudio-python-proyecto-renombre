@@ -1,8 +1,11 @@
 
 """Registro de estrategias usado para construir canales desde la configuración."""
 
-from app.config_models import RuleProfile
+from __future__ import annotations
+
 from typing import Optional
+
+from app.config_models import RuleProfile
 from app.strategies.remove_spaces import RemoveSpacesStrategy
 from app.strategies.uppercase_name import UppercaseNameStrategy
 from app.strategies.validate_extension import ValidateExtensionStrategy

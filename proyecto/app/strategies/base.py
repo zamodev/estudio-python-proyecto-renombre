@@ -1,6 +1,9 @@
 """Interfaz base para todas las estrategias de transformación de archivos."""
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+
 from app.models import FileContext
 
 

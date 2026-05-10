@@ -19,6 +19,8 @@ Estructura de un directorio de perfil:
         aliases.json          ← mapa de aliases documentales
 """
 
+from __future__ import annotations
+
 import json
 import re
 from pathlib import Path

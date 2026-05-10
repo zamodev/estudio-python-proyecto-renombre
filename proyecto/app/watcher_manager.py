@@ -1,5 +1,7 @@
 """Administrador del ciclo de vida de uno o varios watchers de directorio."""
 
+from __future__ import annotations
+
 import logging
 import time
 

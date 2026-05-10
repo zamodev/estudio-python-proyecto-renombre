@@ -1,5 +1,7 @@
 """Integración con Watchdog para carpetas y archivos entrantes."""
 
+from __future__ import annotations
+
 import logging
 import time
 from pathlib import Path

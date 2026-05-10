@@ -1,5 +1,7 @@
 """Estrategia que aplica autocorrecciones estructurales configuradas por patrón."""
 
+from __future__ import annotations
+
 from app.config_models import RuleProfile
 from app.models import FileContext, ProcessingStatus
 from app.strategies.base import FileStrategy

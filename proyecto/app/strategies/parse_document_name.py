@@ -1,5 +1,7 @@
 """Estrategia que interpreta las partes del nombre documental."""
 
+from __future__ import annotations
+
 from app.config_models import RuleProfile
 from app.models import FileContext, ProcessingStatus
 from app.strategies.base import FileStrategy

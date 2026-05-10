@@ -8,6 +8,8 @@ El proceso usa un directorio temporal para no dejar artefactos en disco
 si algo falla durante la extracción o recompresión.
 """
 
+from __future__ import annotations
+
 import logging
 import re
 import shutil

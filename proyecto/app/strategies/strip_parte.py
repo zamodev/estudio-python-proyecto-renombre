@@ -1,6 +1,9 @@
 """Estrategia que detecta y elimina referencias PARTE del nombre de archivos ZIP."""
 
+from __future__ import annotations
+
 import re
+from typing import Optional
 
 from app.config_models import RuleProfile
 from app.models import FileContext, ProcessingStatus
@@ -59,7 +62,7 @@ class StripParteStrategy(FileStrategy):
         )
         return context
 
-    def _find_parte_cut_index(self, tokens: list[str]) -> int | None:
+    def _find_parte_cut_index(self, tokens: list[str]) -> Optional[int]:
         """Devuelve el índice del primer token donde empieza una referencia PARTE.
 
         Evalúa tanto tokens individuales como pares de tokens adyacentes

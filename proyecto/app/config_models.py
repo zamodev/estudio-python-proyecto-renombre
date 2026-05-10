@@ -4,6 +4,8 @@ Este módulo define exclusivamente los dataclasses que representan la configurac
 Toda la lógica de construcción y deserialización vive en config_loader.py.
 """
 
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass
 from typing import Optional

@@ -1,5 +1,7 @@
 """Estrategia que normaliza mecánicamente el nombre del archivo."""
 
+from __future__ import annotations
+
 import re
 
 from app.config_models import RuleProfile
