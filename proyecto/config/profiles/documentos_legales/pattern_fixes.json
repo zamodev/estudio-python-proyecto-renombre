@@ -5,5 +5,12 @@
     "replace": "ASEMB_\\2_\\3",
     "description": "Corrige nombres donde EMB quedó pegado al RUB",
     "enabled": true
+  },
+  {
+    "name": "strip_csv_infix",
+    "match": "^(.+)_CSV_(.+)$",
+    "replace": "\\1_\\2",
+    "description": "Elimina el infijo _CSV_ entre el RUB y la cédula o la referencia PARTE",
+    "enabled": true
   }
 ]

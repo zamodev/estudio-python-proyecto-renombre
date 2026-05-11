@@ -26,6 +26,7 @@ class StripParteStrategy(FileStrategy):
     def __init__(self, rule_profile: RuleProfile):
         self.rule_profile = rule_profile
         self._compiled_patterns: tuple[re.Pattern[str], ...] = ()
+        self._cedula_re = re.compile(rule_profile.cedula_pattern)
 
         if rule_profile.zip_policy:
             self._compiled_patterns = tuple(
@@ -61,6 +62,13 @@ class StripParteStrategy(FileStrategy):
         ):
             clean_tokens = self._strip_roman_from_last_token(clean_tokens)
 
+        # Rescata la cédula si quedó en los tokens descartados (después del corte PARTE)
+        # Ej: ['PARTE', 'II', '79350147'] → rescata '79350147'
+        discarded = tokens[cut_index:]
+        rescued = self._find_cedula_in_tokens(discarded)
+        if rescued:
+            clean_tokens = [*clean_tokens, rescued]
+
         clean_stem = "_".join(clean_tokens)
         context.is_parte = True
         context.update_filename(f"{clean_stem}{context.suffix}")
@@ -69,6 +77,14 @@ class StripParteStrategy(FileStrategy):
             f"Se eliminó la referencia PARTE del nombre: '{working_stem}' → '{clean_stem}'."
         )
         return context
+
+    def _find_cedula_in_tokens(self, tokens: list[str]) -> Optional[str]:
+        """Devuelve el primer token de la lista que coincide con el patrón de cédula."""
+
+        for token in tokens:
+            if self._cedula_re.fullmatch(token):
+                return token
+        return None
 
     _ROMAN_CEDULA_RE = re.compile(r"^(\d{6,12})[IVX]+$")
 
