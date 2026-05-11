@@ -70,6 +70,7 @@ class ZipPolicy:
     parte_detection_patterns: tuple[str, ...]
     parte_keep_extensions: tuple[str, ...]
     general_remove_extensions: tuple[str, ...]
+    strip_roman_suffix_from_token: bool = False
 
 
 @dataclass(frozen=True)
@@ -85,6 +86,7 @@ class RuleProfile:
     cleanup_rules: CleanupRules
     auto_fix_policy: AutoFixPolicy
     zip_policy: Optional[ZipPolicy] = None
+    extension_alias_map: Optional[dict[str, dict[str, str]]] = None
 
     def compiled_rub_patterns(self) -> tuple[re.Pattern[str], ...]:
         """Compila y devuelve las expresiones regulares válidas para RUB."""

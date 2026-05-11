@@ -38,4 +38,8 @@ class BuildCanonicalNameStrategy(FileStrategy):
             context.update_filename(canonical_filename)
             context.add_fix("Se reconstruyó el nombre al formato canónico.")
 
+        # Sincroniza tokens con los segmentos del nombre canónico
+        # para que ValidateBusinessRules vea el conteo correcto
+        context.tokens = parts
+
         return context

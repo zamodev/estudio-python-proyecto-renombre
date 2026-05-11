@@ -1,0 +1,4 @@
+{
+  "EMB": { ".zip": "ASEMB", ".pdf": "CREMB" },
+  "DES": { ".zip": "ASDES", ".pdf": "CRDES" }
+}

@@ -156,6 +156,10 @@ def _merge_profile_dir(profile_dir: Path) -> dict:
     if zip_policy_path.exists():
         merged["zip_policy"] = _read_json(zip_policy_path)
 
+    ext_aliases_path = profile_dir / "extension_aliases.json"
+    if ext_aliases_path.exists():
+        merged["extension_alias_map"] = _read_json(ext_aliases_path)
+
     return merged
 
 
@@ -252,6 +256,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
     cleanup_rules_data = data.get("cleanup_rules", {})
     auto_fix_policy_data = data.get("auto_fix_policy", {})
     zip_policy_data = data.get("zip_policy")
+    extension_alias_map_data = data.get("extension_alias_map")
 
     if not isinstance(document_types_data, dict) or not document_types_data:
         raise ConfigurationError(
@@ -327,6 +332,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
         cleanup_rules=cleanup_rules,
         auto_fix_policy=auto_fix_policy,
         zip_policy=_build_zip_policy(zip_policy_data) if zip_policy_data else None,
+        extension_alias_map=_build_extension_alias_map(extension_alias_map_data) if extension_alias_map_data else None,
     )
 
 
@@ -413,7 +419,33 @@ def _build_zip_policy(data: dict) -> ZipPolicy:
         parte_detection_patterns=tuple(parte_patterns),
         parte_keep_extensions=tuple(ext.lower() for ext in parte_keep),
         general_remove_extensions=tuple(ext.lower() for ext in general_remove),
+        strip_roman_suffix_from_token=bool(data.get("strip_roman_suffix_from_token", False)),
     )
+
+
+def _build_extension_alias_map(data: dict) -> dict:
+    """Construye el mapa de aliases dependientes de extensión.
+
+    Formato esperado en el JSON:
+        { "EMB": { ".zip": "ASEMB", ".pdf": "CREMB" }, ... }
+
+    Las claves y valores se normalizan a mayúsculas; las extensiones a minúsculas.
+    """
+
+    if not isinstance(data, dict):
+        raise ConfigurationError("'extension_alias_map' debe ser un objeto JSON.")
+
+    result = {}
+    for alias, ext_map in data.items():
+        if not isinstance(ext_map, dict):
+            raise ConfigurationError(
+                f"El alias '{alias}' en 'extension_alias_map' debe mapear a un objeto JSON."
+            )
+        result[alias.upper()] = {
+            ext.lower(): target.upper()
+            for ext, target in ext_map.items()
+        }
+    return result
 
 
 def _read_json(path: Path) -> dict:
