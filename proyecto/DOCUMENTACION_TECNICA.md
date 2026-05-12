@@ -43,7 +43,7 @@ Si el archivo ya cumple el formato, se mueve sin cambios. Si puede corregirse au
 
 | Componente | Versión mínima | Notas |
 |---|---|---|
-| Python | 3.9.x | El código es compatible con 3.9+. Probado en 3.12 y 3.14. |
+| Python | 3.9.x | El código es compatible con 3.9 |
 | pip | cualquiera | Para instalar dependencias |
 | watchdog | 4.0.1 | Única dependencia externa |
 
@@ -91,9 +91,6 @@ Editar `config/watchers/documentos_principales.json` y ajustar:
 ```powershell
 # Modo normal (vigila carpetas indefinidamente)
 py -m app.main
-
-# Con configuración alternativa
-py -m app.main --config config/config.json
 
 # Modo simulación: muestra qué haría sin mover archivos
 py -m app.main --dry-run
@@ -591,11 +588,11 @@ config/profiles/contratos_especiales/
 
 | Tipo | Descripción | Requiere cédula | Extensiones válidas |
 |---|---|---|---|
-| `CR` | Certificado de registro | No | `.pdf` |
-| `ASEMB` | Asamblea de acreedores | Sí | `.zip`, `.pdf` |
-| `CREMB` | Certificado de asamblea | Sí | `.zip`, `.pdf` |
-| `ASDES` | Asamblea de desvinculación | Sí | `.zip` |
-| `CRDES` | Certificado de desvinculación | Sí | `.pdf` |
+| `CR` | Carta de respuesta | No | `.pdf` |
+| `ASEMB` | Anexo Embargos | Sí | `.zip` |
+| `CREMB` | Carta de respuesta Embargo | Sí | `.pdf` |
+| `ASDES` | Anexo Desembargos | Sí | `.zip` |
+| `CRDES` | Carta de respuesta Desembargos | Sí | `.pdf` |
 | `SOL` | Solicitud | Sí | `.zip` |
 
 ### Alias reconocidos automáticamente
