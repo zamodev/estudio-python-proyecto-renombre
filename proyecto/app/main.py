@@ -4,6 +4,8 @@ import argparse
 import logging
 
 from app.config_loader import load_config
+from app.dispatch_registry import DispatchRegistry
+from app.destination_watcher import DestinationWatcher
 from app.processor import FileProcessor
 from app.watcher import DirectoryWatcher
 from app.watcher_manager import WatcherManager
@@ -19,15 +21,24 @@ def build_watchers(config, dry_run: bool = False):
     """Crea un watcher por cada carpeta configurada."""
 
     watchers = []
+    destination_watchers = []
 
     for profile in config.watchers:
         rule_profile = config.rule_profiles.get(profile.rules_profile) if profile.rules_profile else None
+
+        registry = None
+        if profile.report_path:
+            registry = DispatchRegistry(
+                destination_path=profile.destination_path,
+                report_path=profile.report_path,
+            )
 
         processor = FileProcessor(
             destination_path=profile.destination_path,
             strategies_config=profile.strategies,
             rule_profile=rule_profile,
             dry_run=dry_run,
+            dispatch_registry=registry,
         )
 
         watchers.append(
@@ -42,7 +53,16 @@ def build_watchers(config, dry_run: bool = False):
             )
         )
 
-    return watchers
+        if registry is not None:
+            destination_watchers.append(
+                DestinationWatcher(
+                    name=profile.name,
+                    destination_path=profile.destination_path,
+                    registry=registry,
+                )
+            )
+
+    return watchers, destination_watchers
 
 
 def main():
@@ -79,9 +99,17 @@ def main():
             "Modo DRY-RUN activo: no se moverán ni renombrarán archivos reales."
         )
 
-    watchers = build_watchers(config, dry_run=args.dry_run)
+    watchers, destination_watchers = build_watchers(config, dry_run=args.dry_run)
+
+    for dw in destination_watchers:
+        dw.start()
+
     manager = WatcherManager(watchers)
-    manager.run_forever()
+    try:
+        manager.run_forever()
+    finally:
+        for dw in destination_watchers:
+            dw.stop()
 
 
 if __name__ == "__main__":

@@ -241,6 +241,7 @@ def _build_watch_profile(
         recursive=bool(data.get("recursive", False)),
         stable_wait_seconds=int(data.get("stable_wait_seconds", 1)),
         stability_checks=int(data.get("stability_checks", 3)),
+        report_path=data.get("report_path") or None,
     )
 
 

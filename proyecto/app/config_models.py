@@ -112,6 +112,7 @@ class WatchProfile:
     recursive: bool = False
     stable_wait_seconds: int = 1
     stability_checks: int = 3
+    report_path: Optional[str] = None
 
 
 @dataclass(frozen=True)

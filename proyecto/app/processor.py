@@ -26,6 +26,7 @@ class FileProcessor:
         strategies_config: list[dict],
         rule_profile: Optional[RuleProfile] = None,
         dry_run: bool = False,
+        dispatch_registry=None,
     ):
         self.destination_path = Path(destination_path)
         self.rule_profile = rule_profile
@@ -33,6 +34,7 @@ class FileProcessor:
         self.strategies = [build_strategy(cfg, rule_profile=rule_profile) for cfg in strategies_config]
         self._processing_lock = threading.Lock()
         self._processing_paths: set[str] = set()
+        self._dispatch_registry = dispatch_registry
         self._zip_filter: Optional[ZipContentFilter] = (
             ZipContentFilter(rule_profile.zip_policy)
             if rule_profile and rule_profile.zip_policy
@@ -94,7 +96,12 @@ class FileProcessor:
             final_source_path = self._rename_if_needed(context)
             final_destination_path = self.destination_path / context.filename
 
+            size_bytes = final_source_path.stat().st_size if final_source_path.exists() else None
             shutil.move(str(final_source_path), str(final_destination_path))
+
+            if self._dispatch_registry is not None:
+                self._dispatch_registry.register(context.filename, size_bytes)
+
             if context.status == ProcessingStatus.AUTO_FIXED:
                 logger.info(
                     "Archivo corregido y movido a: %s. Fixes: %s",

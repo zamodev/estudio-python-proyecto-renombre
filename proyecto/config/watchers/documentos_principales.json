@@ -6,5 +6,6 @@
   "process_existing_on_startup": true,
   "recursive": false,
   "stable_wait_seconds": 1,
-  "stability_checks": 3
+  "stability_checks": 3,
+  "report_path": "C:/Users/juzamora/ECOSISTEMAS/EVC NEGOCIOS DIGITALES TRANSVERSALES/proyecto-u/reportes/documentos_principales_rpa.txt"
 }
