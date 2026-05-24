@@ -58,9 +58,3 @@ class ResolveAliasStrategy(FileStrategy):
         context.update_tokens(updated_tokens)
         context.add_fix(f"Se corrigió el alias documental '{alias_candidate}' a '{replacement}'.")
         return context
-
-
-        updated_tokens = [replacement, *tokens[alias_length:]]
-        context.update_tokens(updated_tokens)
-        context.add_fix(f"Se corrigió el alias documental '{alias_candidate}' a '{replacement}'.")
-        return context
