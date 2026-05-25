@@ -71,6 +71,7 @@ class StripParteStrategy(FileStrategy):
 
         clean_stem = "_".join(clean_tokens)
         context.is_parte = True
+        context.parte_index = self._extract_parte_index(tokens[cut_index:])
         context.update_filename(f"{clean_stem}{context.suffix}")
         context.tokens = clean_tokens
         context.add_fix(
@@ -88,6 +89,10 @@ class StripParteStrategy(FileStrategy):
 
     _ROMAN_CEDULA_RE = re.compile(r"^(\d{6,12})[IVX]+$")
 
+    _PARTE_DIGIT_RE = re.compile(r"PARTE[_]?(\d+)")
+    _PARTE_ROMAN_AFTER_RE = re.compile(r"PARTE[_]?([IVX]+)")
+    _PARTE_ROMAN_BEFORE_RE = re.compile(r"([IVX]+)[_]?PARTE")
+
     def _strip_roman_from_last_token(self, tokens: list[str]) -> list[str]:
         """Elimina un sufijo romano del último token si tiene forma de cédula+romano.
 
@@ -102,8 +107,48 @@ class StripParteStrategy(FileStrategy):
             return [*tokens[:-1], clean_last]
         return tokens
 
-    def _find_parte_cut_index(self, tokens: list[str]) -> Optional[int]:
-        """Devuelve el índice del primer token donde empieza una referencia PARTE.
+    def _extract_parte_index(self, discarded_tokens: list[str]) -> Optional[int]:
+        """Extrae el número ordinal de la referencia PARTE (ej: PARTE_2 → 2, PARTE_II → 2).
+
+        Evalúa los tokens descartados en este orden:
+        1. Dígito explícito: PARTE_1, PARTE1
+        2. Romano después de PARTE: PARTE_II, PARTE_VI
+        3. Romano antes de PARTE: VI_PARTE, I_PARTE
+        Devuelve None si no se puede determinar el número (PARTE solo, CSV_PARTE).
+        """
+
+        joined = "_".join(discarded_tokens)
+
+        m = self._PARTE_DIGIT_RE.search(joined)
+        if m:
+            return int(m.group(1))
+
+        m = self._PARTE_ROMAN_AFTER_RE.search(joined)
+        if m:
+            return self._roman_to_int(m.group(1))
+
+        m = self._PARTE_ROMAN_BEFORE_RE.search(joined)
+        if m:
+            return self._roman_to_int(m.group(1))
+
+        return None
+
+    @staticmethod
+    def _roman_to_int(s: str) -> Optional[int]:
+        """Convierte un número romano a entero. Devuelve None si la cadena es inválida."""
+
+        _VALUES = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100}
+        result = 0
+        prev = 0
+        for char in reversed(s.upper()):
+            val = _VALUES.get(char)
+            if val is None:
+                return None
+            result += val if val >= prev else -val
+            prev = val
+        return result if result > 0 else None
+
+    def _find_parte_cut_index(self, tokens: list[str]) -> Optional[int]:        """Devuelve el índice del primer token donde empieza una referencia PARTE.
 
         Evalúa pares de tokens adyacentes PRIMERO para que variantes como
         'VI_PARTE' sean capturadas al nivel del par (devolviendo i-1)

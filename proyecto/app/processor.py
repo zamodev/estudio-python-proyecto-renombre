@@ -77,7 +77,7 @@ class FileProcessor:
             if self.dry_run:
                 final_destination_path = self.destination_path / context.filename
                 if self._zip_filter and context.suffix == ".zip":
-                    mode = "parte" if context.is_parte else "general"
+                    mode = self._resolve_zip_mode(context)
                     self._zip_filter.filter_zip(context.source_path, mode=mode, dry_run=True)
                 if context.status == ProcessingStatus.AUTO_FIXED:
                     logger.info(
@@ -90,7 +90,7 @@ class FileProcessor:
                 return
 
             if self._zip_filter and context.suffix == ".zip":
-                mode = "parte" if context.is_parte else "general"
+                mode = self._resolve_zip_mode(context)
                 self._zip_filter.filter_zip(context.source_path, mode=mode, dry_run=False)
 
             final_source_path = self._rename_if_needed(context)
@@ -136,3 +136,29 @@ class FileProcessor:
 
         return context.source_path
 
+    def _resolve_zip_mode(self, context: FileContext) -> str:
+        """Determina el modo de filtrado del ZIP según si es PARTE y su número ordinal.
+
+        Reglas:
+        - Sin PARTE → "general" (elimina videos/correos, conserva todo lo demás)
+        - PARTE_1 / PARTE_I sin archivo base → "general" (este ES el base)
+        - PARTE_1 / PARTE_I con archivo base en origen o destino → "parte" (solo CSV)
+        - PARTE_2+ / PARTE_II+ → "parte" (solo CSV)
+        - PARTE sin número → "parte" (conservador)
+        """
+
+        if not context.is_parte:
+            return "general"
+
+        if context.parte_index == 1:
+            doc_type = context.document_type or ""
+            rub = context.rub or ""
+            cedula = context.cedula or ""
+            base_name = f"{doc_type}_{rub}_{cedula}{context.suffix}" if cedula else f"{doc_type}_{rub}{context.suffix}"
+            base_in_source = (context.source_path.parent / base_name).exists()
+            base_in_destination = (self.destination_path / base_name).exists()
+            if base_in_source or base_in_destination:
+                return "parte"
+            return "general"
+
+        return "parte"
