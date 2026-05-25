@@ -12,5 +12,12 @@
     "replace": "\\1_\\2",
     "description": "Elimina el infijo _CSV_ entre el RUB y la cédula o la referencia PARTE",
     "enabled": true
+  },
+  {
+    "name": "strip_ministerio_suffix",
+    "match": "^(.+)_MINISTERIO$",
+    "replace": "\\1",
+    "description": "Elimina el sufijo _MINISTERIO del nombre del archivo",
+    "enabled": true
   }
 ]

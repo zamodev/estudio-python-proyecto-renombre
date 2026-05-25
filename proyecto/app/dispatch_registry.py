@@ -8,7 +8,6 @@ y esta clase escribe la línea de confirmación en el reporte TXT.
 from __future__ import annotations
 
 import logging
-import shutil
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -31,16 +30,6 @@ def _fmt_size(size_bytes: Optional[int]) -> str:
             return f"{size_bytes / threshold:.2f} {unit}"
 
     return f"{size_bytes} B"
-
-
-def _fmt_free(destination_path: Path) -> str:
-    """Devuelve el espacio libre actual en la partición de destination_path."""
-
-    try:
-        usage = shutil.disk_usage(destination_path)
-        return _fmt_size(usage.free)
-    except OSError:
-        return _NA
 
 
 @dataclass
@@ -96,16 +85,15 @@ class DispatchRegistry:
         size_str = _fmt_size(entry.size_bytes if entry else None)
         sent_str = entry.sent_at.strftime("%H:%M:%S") if entry else _NA
         confirmed_str = confirmed_at.strftime("%H:%M:%S")
-        free_str = _fmt_free(self._destination_path)
         date_str = confirmed_at.strftime("%Y-%m-%d")
 
         line = (
-            f"{date_str} {confirmed_str}"
+            f"{date_str}"
+            f" | {confirmed_str}"
             f" | {filename}"
-            f" | {size_str}"
             f" | enviado: {sent_str}"
             f" | confirmado: {confirmed_str}"
-            f" | libre en destino: {free_str}"
+            f" | peso: {size_str}"
         )
 
         self._write_line(line)
