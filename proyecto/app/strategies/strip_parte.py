@@ -148,7 +148,8 @@ class StripParteStrategy(FileStrategy):
             prev = val
         return result if result > 0 else None
 
-    def _find_parte_cut_index(self, tokens: list[str]) -> Optional[int]:        """Devuelve el índice del primer token donde empieza una referencia PARTE.
+    def _find_parte_cut_index(self, tokens: list[str]) -> Optional[int]:
+        """Devuelve el índice del primer token donde empieza una referencia PARTE.
 
         Evalúa pares de tokens adyacentes PRIMERO para que variantes como
         'VI_PARTE' sean capturadas al nivel del par (devolviendo i-1)
