@@ -74,6 +74,17 @@ class ZipPolicy:
 
 
 @dataclass(frozen=True)
+class RubRejectRule:
+    """Regla que rechaza o elimina archivos cuyo RUB coincide con un patrón."""
+
+    name: str
+    match: str
+    message: str
+    action: str = "reject"   # "reject" | "delete"
+    enabled: bool = True
+
+
+@dataclass(frozen=True)
 class RuleProfile:
     """Perfil reutilizable con reglas documentales y autocorrecciones."""
 
@@ -87,6 +98,7 @@ class RuleProfile:
     auto_fix_policy: AutoFixPolicy
     zip_policy: Optional[ZipPolicy] = None
     extension_alias_map: Optional[dict[str, dict[str, str]]] = None
+    rub_reject_rules: tuple[RubRejectRule, ...] = ()
 
     def compiled_rub_patterns(self) -> tuple[re.Pattern[str], ...]:
         """Compila y devuelve las expresiones regulares válidas para RUB."""

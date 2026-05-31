@@ -31,6 +31,7 @@ from app.config_models import (
     CleanupRules,
     DocumentTypeRule,
     PatternFixRule,
+    RubRejectRule,
     RuleProfile,
     WatchProfile,
     ZipPolicy,
@@ -258,6 +259,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
     auto_fix_policy_data = data.get("auto_fix_policy", {})
     zip_policy_data = data.get("zip_policy")
     extension_alias_map_data = data.get("extension_alias_map")
+    rub_reject_rules_data = data.get("rub_reject_rules", [])
 
     if not isinstance(document_types_data, dict) or not document_types_data:
         raise ConfigurationError(
@@ -323,6 +325,16 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
         allow_cedula_guessing=bool(auto_fix_policy_data.get("allow_cedula_guessing", False)),
     )
 
+    if not isinstance(rub_reject_rules_data, list):
+        raise ConfigurationError(
+            f"El perfil '{name}' debe definir 'rub_reject_rules' como una lista si lo informa."
+        )
+
+    rub_reject_rules = tuple(
+        _build_rub_reject_rule(index=index, data=rule_data)
+        for index, rule_data in enumerate(rub_reject_rules_data, start=1)
+    )
+
     return RuleProfile(
         name=name,
         document_types=document_types,
@@ -334,6 +346,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
         auto_fix_policy=auto_fix_policy,
         zip_policy=_build_zip_policy(zip_policy_data) if zip_policy_data else None,
         extension_alias_map=_build_extension_alias_map(extension_alias_map_data) if extension_alias_map_data else None,
+        rub_reject_rules=rub_reject_rules,
     )
 
 
@@ -395,6 +408,43 @@ def _build_document_type_rule(name: str, data: dict) -> DocumentTypeRule:
         requires_cedula=bool(data.get("requires_cedula", True)),
         default_extension=default_extension,
         allowed_extensions=tuple(str(ext).lower() for ext in allowed_extensions_data),
+    )
+
+
+def _build_rub_reject_rule(index: int, data: dict) -> RubRejectRule:
+    if not isinstance(data, dict):
+        raise ConfigurationError(f"La regla rub_reject_rules #{index} debe ser un objeto JSON.")
+
+    name = str(data.get("name") or f"rub_reject_{index}")
+    match = str(data.get("match", ""))
+    message = str(data.get("message", ""))
+    action = str(data.get("action", "reject")).lower()
+    enabled = bool(data.get("enabled", True))
+
+    if not match:
+        raise ConfigurationError(
+            f"La regla rub_reject_rules '{name}' debe incluir el campo 'match'."
+        )
+
+    try:
+        re.compile(match)
+    except re.error as exc:
+        raise ConfigurationError(
+            f"La regla rub_reject_rules '{name}' tiene una expresión regular inválida."
+        ) from exc
+
+    if action not in ("reject", "delete"):
+        raise ConfigurationError(
+            f"La regla rub_reject_rules '{name}' tiene un 'action' inválido: '{action}'. "
+            "Use 'reject' o 'delete'."
+        )
+
+    return RubRejectRule(
+        name=name,
+        match=match,
+        message=message,
+        action=action,
+        enabled=enabled,
     )
 
 

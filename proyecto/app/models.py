@@ -13,6 +13,7 @@ class ProcessingStatus(str, Enum):
     VALID = "VALID"
     AUTO_FIXED = "AUTO_FIXED"
     REJECTED = "REJECTED"
+    DELETED = "DELETED"
 
 
 @dataclass
@@ -84,6 +85,13 @@ class FileContext:
         """Marca el archivo como válido o autocorregido según los cambios aplicados."""
 
         self.status = ProcessingStatus.AUTO_FIXED if self.has_changes else ProcessingStatus.VALID
+
+    def mark_deleted(self, message: Optional[str] = None) -> None:
+        """Marca el archivo para eliminación física y registra el motivo."""
+
+        if message:
+            self.add_error(message)
+        self.status = ProcessingStatus.DELETED
 
     def mark_rejected(self, message: Optional[str] = None) -> None:
         """Marca el archivo como rechazado y, opcionalmente, agrega el motivo."""

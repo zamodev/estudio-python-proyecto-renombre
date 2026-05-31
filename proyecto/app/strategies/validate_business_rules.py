@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from app.config_models import RuleProfile
 from app.models import FileContext, ProcessingStatus
 from app.strategies.base import FileStrategy
@@ -44,8 +46,16 @@ class ValidateBusinessRulesStrategy(FileStrategy):
 
         if not context.rub:
             context.add_error("No se encontró el RUB en el nombre del archivo.")
-        elif not any(pattern.fullmatch(context.rub) for pattern in self._rub_patterns):
-            context.add_error(f"El RUB '{context.rub}' no cumple los formatos permitidos.")
+        else:
+            for rule in self.rule_profile.rub_reject_rules:
+                if rule.enabled and re.fullmatch(rule.match, context.rub):
+                    if rule.action == "delete":
+                        context.mark_deleted(rule.message)
+                    else:
+                        context.mark_rejected(rule.message)
+                    return context
+            if not any(pattern.fullmatch(context.rub) for pattern in self._rub_patterns):
+                context.add_error(f"El RUB '{context.rub}' no cumple los formatos permitidos.")
 
         if document_rule.requires_cedula:
             if not context.cedula:

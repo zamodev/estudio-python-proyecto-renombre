@@ -74,6 +74,18 @@ class FileProcessor:
                 )
                 return
 
+            if context.status == ProcessingStatus.DELETED:
+                logger.warning(
+                    "Archivo ELIMINADO por regla de negocio: %s. Motivo: %s",
+                    context.original_filename,
+                    "; ".join(context.validation_errors) or "Sin detalle.",
+                )
+                if not self.dry_run:
+                    context.source_path.unlink(missing_ok=True)
+                else:
+                    logger.info("[DRY-RUN] Se eliminaría: %s", context.original_filename)
+                return
+
             if self.dry_run:
                 final_destination_path = self.destination_path / context.filename
                 if self._zip_filter and context.suffix == ".zip":

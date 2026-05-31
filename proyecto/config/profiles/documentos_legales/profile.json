@@ -21,5 +21,14 @@
     "allow_extension_normalization": false,
     "allow_rub_guessing": false,
     "allow_cedula_guessing": false
-  }
+  },
+  "rub_reject_rules": [
+    {
+      "name": "rub_con_letra_n_al_final",
+      "match": "^.+N$",
+      "action": "delete",
+      "message": "El RUB termina en la letra 'N', archivo eliminado por regla de negocio.",
+      "enabled": true
+    }
+  ]
 }
