@@ -2,7 +2,7 @@
   "parte_detection_patterns": [
     "PARTE[_]?\\d+",
     "PARTE[_]?[IVX]+",
-    "[IVX]+[_]?PARTE",
+    "[IVX]+[_ ]?PARTE",
     "CSV[_]?PARTE",
     "^PARTE$"
   ],

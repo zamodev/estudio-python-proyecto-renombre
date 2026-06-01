@@ -91,7 +91,7 @@ class StripParteStrategy(FileStrategy):
 
     _PARTE_DIGIT_RE = re.compile(r"PARTE[_]?(\d+)")
     _PARTE_ROMAN_AFTER_RE = re.compile(r"PARTE[_]?([IVX]+)")
-    _PARTE_ROMAN_BEFORE_RE = re.compile(r"([IVX]+)[_]?PARTE")
+    _PARTE_ROMAN_BEFORE_RE = re.compile(r"([IVX]+)[_ ]?PARTE")
 
     def _strip_roman_from_last_token(self, tokens: list[str]) -> list[str]:
         """Elimina un sufijo romano del último token si tiene forma de cédula+romano.
