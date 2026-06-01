@@ -3,7 +3,7 @@
     "^RL\\d{8}$",
     "^RQL\\d{12}$"
   ],
-  "cedula_pattern": "^\\d{6,12}$",
+  "cedula_pattern": "^\\d{6,20}$",
   "cleanup_rules": {
     "uppercase": true,
     "replace_spaces_with_underscore": true,

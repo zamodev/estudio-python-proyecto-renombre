@@ -19,5 +19,26 @@
     "replace": "\\1",
     "description": "Elimina el sufijo _MINISTERIO del nombre del archivo",
     "enabled": true
+  },
+  {
+    "name": "strip_f_cedula_and_rsta",
+    "match": "^(.+)_F(\\d+)_RSTA$",
+    "replace": "\\1_\\2",
+    "description": "Elimina la letra F antes del número y el sufijo _RSTA (ambos presentes)",
+    "enabled": true
+  },
+  {
+    "name": "strip_rsta_suffix",
+    "match": "^(.+)_RSTA$",
+    "replace": "\\1",
+    "description": "Elimina el sufijo _RSTA del nombre del archivo",
+    "enabled": true
+  },
+  {
+    "name": "strip_f_prefix_in_cedula",
+    "match": "^(.+)_F(\\d+)(.*)$",
+    "replace": "\\1_\\2\\3",
+    "description": "Elimina la letra F pegada antes de un identificador numérico",
+    "enabled": true
   }
 ]
