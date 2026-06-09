@@ -1,11 +1,18 @@
 {
   "name": "documentos_principales",
-  "watch_path": "C:/Users/juzamora/ECOSISTEMAS/EVC NEGOCIOS DIGITALES TRANSVERSALES/MODULO_ADMINISTRATIVO/TEMPORAL_SPACE_V2/Sprint 246/a",
-  "destination_path": "C:/Users/juzamora/ECOSISTEMAS/EVC NEGOCIOS DIGITALES TRANSVERSALES/MODULO_ADMINISTRATIVO/TEMPORAL_SPACE_V2/Sprint 246/b",
+  "watch_path": "",
+  "destination_path": "",
   "rules_profile": "documentos_legales",
   "process_existing_on_startup": true,
   "recursive": false,
   "stable_wait_seconds": 1,
   "stability_checks": 3,
-  "report_path": "C:/Users/juzamora/ECOSISTEMAS/EVC NEGOCIOS DIGITALES TRANSVERSALES/MODULO_ADMINISTRATIVO/TEMPORAL_SPACE_V2/Sprint 246/documentos_principales_rpa.txt"
+  "report_path": "",
+  "report_retention": {
+    "enabled": true,
+    "retention_days": 30,
+    "cleanup_interval_minutes": 1440,
+    "cleanup_on_startup": true,
+    "keep_unparseable_lines": true
+  }
 }

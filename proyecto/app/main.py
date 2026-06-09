@@ -22,6 +22,7 @@ def build_watchers(config, dry_run: bool = False):
 
     watchers = []
     destination_watchers = []
+    registries = []
 
     for profile in config.watchers:
         rule_profile = config.rule_profiles.get(profile.rules_profile) if profile.rules_profile else None
@@ -31,7 +32,9 @@ def build_watchers(config, dry_run: bool = False):
             registry = DispatchRegistry(
                 destination_path=profile.destination_path,
                 report_path=profile.report_path,
+                retention_policy=profile.report_retention,
             )
+            registries.append(registry)
 
         processor = FileProcessor(
             destination_path=profile.destination_path,
@@ -62,7 +65,7 @@ def build_watchers(config, dry_run: bool = False):
                 )
             )
 
-    return watchers, destination_watchers
+    return watchers, destination_watchers, registries
 
 
 def main():
@@ -99,7 +102,10 @@ def main():
             "Modo DRY-RUN activo: no se moverán ni renombrarán archivos reales."
         )
 
-    watchers, destination_watchers = build_watchers(config, dry_run=args.dry_run)
+    watchers, destination_watchers, registries = build_watchers(config, dry_run=args.dry_run)
+
+    for registry in registries:
+        registry.start_retention()
 
     for dw in destination_watchers:
         dw.start()
@@ -110,6 +116,8 @@ def main():
     finally:
         for dw in destination_watchers:
             dw.stop()
+        for registry in registries:
+            registry.stop_retention()
 
 
 if __name__ == "__main__":

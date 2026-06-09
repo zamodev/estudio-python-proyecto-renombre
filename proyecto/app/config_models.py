@@ -85,6 +85,17 @@ class RubRejectRule:
 
 
 @dataclass(frozen=True)
+class ReportRetentionPolicy:
+    """Política de depuración automática para reportes TXT de despacho."""
+
+    enabled: bool = True
+    retention_days: int = 30
+    cleanup_interval_minutes: int = 1440
+    cleanup_on_startup: bool = True
+    keep_unparseable_lines: bool = True
+
+
+@dataclass(frozen=True)
 class NamingTemplateRule:
     """Regla declarativa para construir un nombre documental desde una plantilla."""
 
@@ -143,6 +154,7 @@ class WatchProfile:
     stable_wait_seconds: int = 1
     stability_checks: int = 3
     report_path: Optional[str] = None
+    report_retention: Optional[ReportRetentionPolicy] = None
 
 
 @dataclass(frozen=True)

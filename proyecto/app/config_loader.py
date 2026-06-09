@@ -32,6 +32,7 @@ from app.config_models import (
     DocumentTypeRule,
     NamingTemplateRule,
     PatternFixRule,
+    ReportRetentionPolicy,
     RubRejectRule,
     RuleProfile,
     WatchProfile,
@@ -238,6 +239,12 @@ def _build_watch_profile(
             f"El watcher '{name}' debe definir estrategias o un 'rules_profile'."
         )
 
+    report_retention = _build_report_retention_policy(
+        watcher_name=name,
+        report_path=data.get("report_path") or None,
+        retention_data=data.get("report_retention"),
+    )
+
     return WatchProfile(
         name=name,
         watch_path=watch_path,
@@ -249,6 +256,50 @@ def _build_watch_profile(
         stable_wait_seconds=int(data.get("stable_wait_seconds", 1)),
         stability_checks=int(data.get("stability_checks", 3)),
         report_path=data.get("report_path") or None,
+        report_retention=report_retention,
+    )
+
+
+def _build_report_retention_policy(
+    watcher_name: str,
+    report_path: str | None,
+    retention_data,
+) -> ReportRetentionPolicy | None:
+    if report_path is None and retention_data is None:
+        return None
+
+    if report_path is None and retention_data is not None:
+        raise ConfigurationError(
+            f"El watcher '{watcher_name}' define 'report_retention' pero no incluye 'report_path'."
+        )
+
+    if retention_data is None:
+        return ReportRetentionPolicy()
+
+    if not isinstance(retention_data, dict):
+        raise ConfigurationError(
+            f"El watcher '{watcher_name}' debe definir 'report_retention' como un objeto JSON."
+        )
+
+    retention_days = int(retention_data.get("retention_days", 30))
+    cleanup_interval_minutes = int(retention_data.get("cleanup_interval_minutes", 1440))
+
+    if retention_days <= 0:
+        raise ConfigurationError(
+            f"El watcher '{watcher_name}' debe definir 'report_retention.retention_days' mayor que cero."
+        )
+
+    if cleanup_interval_minutes <= 0:
+        raise ConfigurationError(
+            f"El watcher '{watcher_name}' debe definir 'report_retention.cleanup_interval_minutes' mayor que cero."
+        )
+
+    return ReportRetentionPolicy(
+        enabled=bool(retention_data.get("enabled", True)),
+        retention_days=retention_days,
+        cleanup_interval_minutes=cleanup_interval_minutes,
+        cleanup_on_startup=bool(retention_data.get("cleanup_on_startup", True)),
+        keep_unparseable_lines=bool(retention_data.get("keep_unparseable_lines", True)),
     )
 
 
