@@ -21,6 +21,9 @@ class ValidateBusinessRulesStrategy(FileStrategy):
         if context.status == ProcessingStatus.REJECTED:
             return context
 
+        if context.naming_template_applied:
+            return context
+
         context.clear_errors()
 
         document_type = context.document_type

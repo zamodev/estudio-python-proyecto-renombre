@@ -36,6 +36,8 @@ class FileContext:
     status: ProcessingStatus = ProcessingStatus.PENDING
     is_parte: bool = False
     parte_index: Optional[int] = None
+    naming_template_applied: bool = False
+    naming_template_rule: Optional[str] = None
 
     @classmethod
     def from_path(cls, path: Path) -> "FileContext":

@@ -85,6 +85,23 @@ class RubRejectRule:
 
 
 @dataclass(frozen=True)
+class NamingTemplateRule:
+    """Regla declarativa para construir un nombre documental desde una plantilla."""
+
+    name: str
+    match: str
+    template: str
+    description: str = ""
+    enabled: bool = True
+    date_source: str = "filename_or_execution"
+
+    def compiled_match(self) -> re.Pattern[str]:
+        """Compila y devuelve el patrón de búsqueda de la regla."""
+
+        return re.compile(self.match)
+
+
+@dataclass(frozen=True)
 class RuleProfile:
     """Perfil reutilizable con reglas documentales y autocorrecciones."""
 
@@ -96,6 +113,7 @@ class RuleProfile:
     alias_map: dict[str, str]
     cleanup_rules: CleanupRules
     auto_fix_policy: AutoFixPolicy
+    naming_templates: tuple[NamingTemplateRule, ...] = ()
     zip_policy: Optional[ZipPolicy] = None
     extension_alias_map: Optional[dict[str, dict[str, str]]] = None
     rub_reject_rules: tuple[RubRejectRule, ...] = ()

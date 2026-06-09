@@ -17,6 +17,9 @@ class ParseDocumentNameStrategy(FileStrategy):
         if context.status == ProcessingStatus.REJECTED:
             return context
 
+        if context.naming_template_applied:
+            return context
+
         tokens = context.tokens or [token for token in context.stem.split("_") if token]
         context.tokens = tokens
 

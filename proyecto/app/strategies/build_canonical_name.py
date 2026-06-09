@@ -17,6 +17,9 @@ class BuildCanonicalNameStrategy(FileStrategy):
         if context.status == ProcessingStatus.REJECTED:
             return context
 
+        if context.naming_template_applied:
+            return context
+
         document_type = context.document_type
         if not document_type:
             return context

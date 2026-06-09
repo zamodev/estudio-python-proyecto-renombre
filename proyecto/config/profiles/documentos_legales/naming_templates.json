@@ -1,0 +1,18 @@
+[
+  {
+    "name": "desembargos_rta",
+    "match": "^(?P<prefix>1|12)_?DESEMBARGOSRTA_(?P<rub>[A-Z0-9]+)(?:_(?:(?P<day>\\d{2})_(?P<month>\\d{2})_(?P<year>\\d{4})|(?P<date>\\d{8})))?(?:_(?P<suffix>\\d+))?$",
+    "template": "{prefix}DESEMBARGOSRTA_{rub}_{date_compact}{suffix_block}",
+    "description": "Normaliza 1DesembargosRTA y 12DesembargosRTA con RUB, fecha y sufijo opcional.",
+    "enabled": true,
+    "date_source": "filename_or_execution"
+  },
+  {
+    "name": "rta_general",
+    "match": "^(?P<prefix>2|3|4|5|9|13|14)_?RTA_(?P<rub>[A-Z0-9]+)(?:_(?:(?P<day>\\d{2})_(?P<month>\\d{2})_(?P<year>\\d{4})|(?P<date>\\d{8})))?(?:_(?P<suffix>\\d+))?$",
+    "template": "{prefix}RTA_{rub}_{date_compact}{suffix_block}",
+    "description": "Normaliza los casos RTA con fecha compacta y sufijo numérico opcional.",
+    "enabled": true,
+    "date_source": "filename_or_execution"
+  }
+]

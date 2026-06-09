@@ -30,6 +30,7 @@ from app.config_models import (
     AutoFixPolicy,
     CleanupRules,
     DocumentTypeRule,
+    NamingTemplateRule,
     PatternFixRule,
     RubRejectRule,
     RuleProfile,
@@ -43,6 +44,7 @@ _DEFAULT_PIPELINE = [
     {"name": "NormalizeFilenameStrategy", "params": {}},
     {"name": "ApplyPatternFixesStrategy", "params": {}},
     {"name": "ResolveAliasStrategy", "params": {}},
+    {"name": "ApplyNamingTemplateStrategy", "params": {}},
     {"name": "StripParteStrategy", "params": {}},
     {"name": "ParseDocumentNameStrategy", "params": {}},
     {"name": "BuildCanonicalNameStrategy", "params": {}},
@@ -140,6 +142,10 @@ def _merge_profile_dir(profile_dir: Path) -> dict:
         )
 
     merged = _read_json(profile_json)
+
+    naming_templates_path = profile_dir / "naming_templates.json"
+    if naming_templates_path.exists():
+        merged["naming_templates"] = _read_json(naming_templates_path)
 
     doc_types_path = profile_dir / "document_types.json"
     if doc_types_path.exists():
@@ -260,6 +266,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
     zip_policy_data = data.get("zip_policy")
     extension_alias_map_data = data.get("extension_alias_map")
     rub_reject_rules_data = data.get("rub_reject_rules", [])
+    naming_templates_data = data.get("naming_templates", [])
 
     if not isinstance(document_types_data, dict) or not document_types_data:
         raise ConfigurationError(
@@ -335,6 +342,16 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
         for index, rule_data in enumerate(rub_reject_rules_data, start=1)
     )
 
+    if not isinstance(naming_templates_data, list):
+        raise ConfigurationError(
+            f"El perfil '{name}' debe definir 'naming_templates' como una lista si lo informa."
+        )
+
+    naming_templates = tuple(
+        _build_naming_template_rule(index=index, data=rule_data)
+        for index, rule_data in enumerate(naming_templates_data, start=1)
+    )
+
     return RuleProfile(
         name=name,
         document_types=document_types,
@@ -347,6 +364,7 @@ def _build_rule_profile(name: str, data: dict) -> RuleProfile:
         zip_policy=_build_zip_policy(zip_policy_data) if zip_policy_data else None,
         extension_alias_map=_build_extension_alias_map(extension_alias_map_data) if extension_alias_map_data else None,
         rub_reject_rules=rub_reject_rules,
+        naming_templates=naming_templates,
     )
 
 
@@ -445,6 +463,51 @@ def _build_rub_reject_rule(index: int, data: dict) -> RubRejectRule:
         message=message,
         action=action,
         enabled=enabled,
+    )
+
+
+def _build_naming_template_rule(index: int, data: dict) -> NamingTemplateRule:
+    if not isinstance(data, dict):
+        raise ConfigurationError(
+            f"La regla naming_templates #{index} debe ser un objeto JSON."
+        )
+
+    name = str(data.get("name") or f"naming_template_{index}")
+    match = str(data.get("match", ""))
+    template = str(data.get("template", ""))
+    description = str(data.get("description", ""))
+    enabled = bool(data.get("enabled", True))
+    date_source = str(data.get("date_source", "filename_or_execution")).lower()
+
+    if not match:
+        raise ConfigurationError(
+            f"La regla naming_templates '{name}' debe incluir el campo 'match'."
+        )
+
+    try:
+        re.compile(match)
+    except re.error as exc:
+        raise ConfigurationError(
+            f"La regla naming_templates '{name}' tiene una expresión regular inválida."
+        ) from exc
+
+    if not template:
+        raise ConfigurationError(
+            f"La regla naming_templates '{name}' debe incluir el campo 'template'."
+        )
+
+    if date_source not in {"filename", "execution", "filename_or_execution"}:
+        raise ConfigurationError(
+            f"La regla naming_templates '{name}' tiene un 'date_source' inválido: '{date_source}'."
+        )
+
+    return NamingTemplateRule(
+        name=name,
+        match=match,
+        template=template,
+        description=description,
+        enabled=enabled,
+        date_source=date_source,
     )
 
 

@@ -33,6 +33,7 @@ Cada watcher puede apuntar a un perfil usando `rules_profile`, lo que evita dupl
 - `NormalizeFilenameStrategy`
 - `ApplyPatternFixesStrategy`
 - `ResolveAliasStrategy`
+- `ApplyNamingTemplateStrategy`
 - `ParseDocumentNameStrategy`
 - `BuildCanonicalNameStrategy`
 - `ValidateBusinessRulesStrategy`
@@ -42,9 +43,12 @@ Este pipeline permite:
 - normalizar separadores, mayúsculas y caracteres especiales
 - corregir errores estructurales configurables como `EMBRQL... -> ASEMB_RQL...`
 - corregir aliases documentales configurables como `AS_EMB -> ASEMB`
+- aplicar plantillas de renombrado por casuística, por ejemplo `2_RTA_... -> 2RTA_...`
 - validar tipos documentales, RUB, cédula y extensión
 - reconstruir nombres canónicos antes de mover el archivo
 - dejar en origen los archivos que no se pueden validar con seguridad
+
+Las plantillas de naming viven en `config/profiles/<perfil>/naming_templates.json` y se activan de forma automática cuando el perfil las define.
 
 ## Manejo de errores
 
