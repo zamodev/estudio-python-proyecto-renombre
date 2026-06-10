@@ -1,7 +1,7 @@
 [
   {
     "name": "desembargos_rta",
-    "match": "^(?P<prefix>1|12)_?DESEMBARGOSRTA_(?P<rub>[A-Z0-9]+)(?:_(?:(?P<day>\\d{2})_(?P<month>\\d{2})_(?P<year>\\d{4})|(?P<date>\\d{8})))?(?:_(?P<suffix>\\d+))?$",
+    "match": "^(?P<prefix>1|12)[_-]?DESEMBARGOS[_-]?RTA[_-]?(?P<rub>[A-Z0-9]+)(?:[_-]?(?:(?P<day>\\d{2})[_-]?(?P<month>\\d{2})[_-]?(?P<year>\\d{4})|(?P<date>\\d{8})))?(?:[_-]?(?P<suffix>\\d+))?$",
     "template": "{prefix}DESEMBARGOSRTA_{rub}_{date_compact}{suffix_block}",
     "description": "Normaliza 1DesembargosRTA y 12DesembargosRTA con RUB, fecha y sufijo opcional.",
     "enabled": true,
